@@ -3,6 +3,7 @@ import { Container, Card, Button, Row, Col } from 'react-bootstrap';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import Chatbot from './Chatbot';
+import { Link } from 'react-router-dom';
 
 const Dashboard = () => {
     const { user, logout } = useAuth();
@@ -25,6 +26,11 @@ const Dashboard = () => {
                                     <Card.Text>
                                         Email: {user?.email}
                                     </Card.Text>
+                                    {user?.isAdmin && (
+                                        <Link to="/admin" className="btn btn-primary">
+                                            Admin Dashboard
+                                        </Link>
+                                    )}
                                 </div>
                                 <Button variant="outline-danger" onClick={handleLogout}>
                                     Logout
@@ -42,5 +48,4 @@ const Dashboard = () => {
         </Container>
     );
 };
-
 export default Dashboard;

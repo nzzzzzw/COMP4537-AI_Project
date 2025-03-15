@@ -20,7 +20,11 @@ const Login = () => {
                 { withCredentials: true }
             );
             login(data);
-            navigate('/dashboard');
+            if (data.isAdmin) {
+                navigate('/admin');
+            } else {
+                navigate('/dashboard');
+            }
         } catch (err) {
             setError(err.response?.data?.message || 'An error occurred');
         }

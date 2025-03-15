@@ -6,11 +6,18 @@ import Login from './components/Login';
 import Register from './components/Register';
 import Dashboard from './components/Dashboard';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Admin from './components/Admin';
 
 const PrivateRoute = ({ children }) => {
     const { user } = useAuth();
     return user ? children : <Navigate to="/login" />;
 };
+
+const AdminRoute = ({ children }) => {
+    const { user } = useAuth();
+    return user?.isAdmin ? children : <Navigate to="/dashboard" />;
+};
+
 
 const App = () => {
     return (
@@ -26,6 +33,14 @@ const App = () => {
                                 <PrivateRoute>
                                     <Dashboard />
                                 </PrivateRoute>
+                            }
+                        />
+                        <Route
+                            path="/admin"
+                            element={
+                                <AdminRoute>
+                                    <Admin />
+                                </AdminRoute>
                             }
                         />
                         <Route path="/" element={<Navigate to="/login" />} />
