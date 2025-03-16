@@ -17,7 +17,7 @@ const Admin = () => {
 
         const fetchUsers = async () => {
             try {
-                const { data } = await axios.get('http://localhost:5001/api/auth/users', {
+                const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/auth/users`, {
                     withCredentials: true
                 });
                 setUsers(data);

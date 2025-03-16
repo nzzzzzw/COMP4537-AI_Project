@@ -13,8 +13,23 @@ const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
+
+// Update CORS configuration to accept multiple origins
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://64.23.141.81',
+  process.env.FRONTEND_URL // You could also add this to your .env file
+];
+
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: function(origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) === -1) {
+            return callback(new Error('CORS policy violation'), false);
+        }
+        return callback(null, true);
+    },
     credentials: true
 }));
 

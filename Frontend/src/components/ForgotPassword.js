@@ -12,7 +12,7 @@ const ForgotPassword = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            const { data } = await axios.post('http://localhost:5001/api/auth/forgot-password', { email });
+            const { data } = await axios.post(`${process.env.REACT_APP_API_URL}/auth/forgot-password`, { email });
             setStatus({
                 type: 'success',
                 message: 'If an account exists with this email, you will receive a password reset link'

@@ -105,7 +105,7 @@ const Chatbot = () => {
       setLoading(true); // Start loading
       setError(''); // Clear previous errors
       const { data } = await axios.post(
-        'http://localhost:5001/api/chatbot/generate-response',
+        `${process.env.REACT_APP_API_URL}/chatbot/generate-response`,
         { answers: Object.values(answers) },
         { withCredentials: true }
       );
