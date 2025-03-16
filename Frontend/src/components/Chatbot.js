@@ -102,12 +102,18 @@ const Chatbot = () => {
 
   const handleSubmit = async () => {
     try {
-      setLoading(true); // Start loading
-      setError(''); // Clear previous errors
+      setLoading(true);
+      setError('');
+      const token = localStorage.getItem('token'); // Get token from localStorage
       const { data } = await axios.post(
         `${process.env.REACT_APP_API_URL}/chatbot/generate-response`,
         { answers: Object.values(answers) },
-        { withCredentials: true }
+        { 
+          withCredentials: true,
+          headers: {
+            'Authorization': `Bearer ${token}` // Add token to headers
+          }
+        }
       );
       setResponse(data.reply);
     } catch (error) {
@@ -118,7 +124,7 @@ const Chatbot = () => {
         setError('Something went wrong. Please try again.');
       }
     } finally {
-      setLoading(false); // End loading
+      setLoading(false);
     }
   };
 
