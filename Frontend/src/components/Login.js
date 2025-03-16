@@ -15,10 +15,21 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const { data } = await axios.post(`${process.env.REACT_APP_API_URL}/auth/login`, 
+            const { data } = await axios.post(
+                `${process.env.REACT_APP_API_URL}/auth/login`, 
                 { email, password },
-                { withCredentials: true }
+                { 
+                    withCredentials: true,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }
             );
+            
+            if (data.token) {
+                localStorage.setItem('token', data.token);
+            }
+            
             login(data);
             if (data.isAdmin) {
                 navigate('/admin');
