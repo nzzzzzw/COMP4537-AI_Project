@@ -24,7 +24,9 @@ const userSchema = new mongoose.Schema({
     isAdmin: {
         type: Boolean,
         default: false
-    }
+    },
+    resetPasswordToken: String,
+    resetPasswordExpires: Date
 }, { timestamps: true });
 
 userSchema.pre('save', async function(next) {
@@ -37,6 +39,23 @@ userSchema.pre('save', async function(next) {
 
 userSchema.methods.matchPassword = async function(enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);
+};
+
+userSchema.methods.createResetPasswordToken = function() {
+    const crypto = require('crypto');
+    // Generate random token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    
+    // Hash token and save to database
+    this.resetPasswordToken = crypto
+        .createHash('sha256')
+        .update(resetToken)
+        .digest('hex');
+        
+    // Set expiry (10 minutes)
+    this.resetPasswordExpires = Date.now() + 10 * 60 * 1000;
+    
+    return resetToken;
 };
 
 const User = mongoose.model('User', userSchema);
