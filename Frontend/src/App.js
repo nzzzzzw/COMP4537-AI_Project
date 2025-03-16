@@ -7,6 +7,8 @@ import Register from './components/Register';
 import Dashboard from './components/Dashboard';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Admin from './components/Admin';
+import ForgotPassword from './components/ForgotPassword';
+import ResetPassword from './components/ResetPassword';
 
 const PrivateRoute = ({ children }) => {
     const { user } = useAuth();
@@ -44,6 +46,8 @@ const App = () => {
                             }
                         />
                         <Route path="/" element={<Navigate to="/login" />} />
+                        <Route path="/forgot-password" element={<ForgotPassword />} />
+                        <Route path="/reset-password/:token" element={<ResetPassword />} />    
                     </Routes>
                 </Container>
             </Router>
