@@ -67,6 +67,11 @@ const Login = () => {
                         <p>Don't have an account? <Link to="/register">Register here</Link></p>
                     </Col>
                 </Row>
+                <Row className="mt-3">
+                    <Col className="text-center">
+                        <Link to="/forgot-password">Forgot Password?</Link>
+                    </Col>
+                </Row>
             </Form>
         </Container>
     );
