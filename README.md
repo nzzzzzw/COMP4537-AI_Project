@@ -10,7 +10,7 @@
 ```
 `cd Backend`
 `npm init -y`
-`npm install express mongoose dotenv bcryptjs jsonwebtoken cookie-parser cors`
+`npm install express mongoose dotenv bcryptjs jsonwebtoken cookie-parser cors axios`
 `node server.js`
 ```
 ### Here are 8 comprehensive mental health questions covering:
