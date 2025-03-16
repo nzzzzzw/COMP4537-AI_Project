@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Container, Button, Form, Card, ProgressBar } from 'react-bootstrap';
+import { Container, Button, Form, Card, ProgressBar, Spinner, Alert } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Chatbot = () => {
   const [answers, setAnswers] = useState({});
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [response, setResponse] = useState('');
+  const [loading, setLoading] = useState(false); 
+  const [error, setError] = useState(''); 
 
   const questions = [
     {
@@ -100,16 +102,23 @@ const Chatbot = () => {
 
   const handleSubmit = async () => {
     try {
+      setLoading(true); // Start loading
+      setError(''); // Clear previous errors
       const { data } = await axios.post(
-        'http://localhost:5000/api/chatbot/generate-response',
+        'http://localhost:5001/api/chatbot/generate-response',
         { answers: Object.values(answers) },
         { withCredentials: true }
       );
       setResponse(data.reply);
-      setCurrentQuestion(0);
-      setAnswers({});
     } catch (error) {
       console.error('Error:', error);
+      if (error.response?.status === 403) {
+        setError('You have exceeded the free API call limit.');
+      } else {
+        setError('Something went wrong. Please try again.');
+      }
+    } finally {
+      setLoading(false); // End loading
     }
   };
 
@@ -119,7 +128,7 @@ const Chatbot = () => {
     }
   };
 
-  const progress = ((currentQuestion + 1) / questions.length) * 100;
+  const progress = ((Object.keys(answers).length) / questions.length) * 100;
 
   return (
     <Container className="d-flex justify-content-center align-items-center min-vh-100 py-5">
@@ -127,7 +136,11 @@ const Chatbot = () => {
         <h2 className="text-center mb-4">Mental Health Assessment</h2>
         <ProgressBar now={progress} className="mb-4" variant="info" label={`${Math.round(progress)}%`} />
         
-        {currentQuestion < questions.length ? (
+        {/* Display error message */}
+        {error && <Alert variant="danger">{error}</Alert>}
+        
+        {/* Conditional rendering: If still answering questions and no response */}
+        {currentQuestion < questions.length && !response ? (
           <>
             <Form.Group className="mb-4">
               <Form.Label className="fw-bold">{questions[currentQuestion].question}</Form.Label>
@@ -156,25 +169,53 @@ const Chatbot = () => {
                 <Button 
                   variant="success" 
                   onClick={handleSubmit}
+                  disabled={loading} // Disable button while loading
                 >
-                  Submit Assessment
+                  {loading ? ( // Show loading state
+                    <>
+                      <Spinner
+                        as="span"
+                        animation="border"
+                        size="sm"
+                        role="status"
+                        aria-hidden="true"
+                      />{' '}
+                      Generating...
+                    </>
+                  ) : (
+                    'Submit Assessment'
+                  )}
                 </Button>
               )}
             </div>
           </>
         ) : null}
 
-        {response && (
+        {/* Loading display state */}
+        {loading && (
+          <div className="text-center p-5">
+            <Spinner animation="border" role="status" variant="primary" />
+            <p className="mt-3">Analyzing your responses and generating personalized advice...</p>
+          </div>
+        )}
+
+        {/* Display results with better formatting and disclaimer */}
+        {response && !loading && (
           <Card className="mt-4 p-3" style={{ backgroundColor: '#f8f9fa' }}>
             <Card.Body>
-              <Card.Title>Assessment Results</Card.Title>
-              <Card.Text>{response}</Card.Text>
+              <Card.Title>Your Personalized Assessment</Card.Title>
+              <Card.Text style={{ whiteSpace: 'pre-line' }}>{response}</Card.Text>
+              <div className="mt-4 small text-muted">
+                <p>Please remember, this is AI-generated advice and is not a substitute for professional mental health care. 
+                If you are experiencing serious symptoms, please consult a healthcare professional.</p>
+              </div>
               <Button 
                 variant="primary" 
                 onClick={() => {
                   setResponse('');
                   setCurrentQuestion(0);
                   setAnswers({});
+                  setError('');
                 }}
                 className="mt-3"
               >

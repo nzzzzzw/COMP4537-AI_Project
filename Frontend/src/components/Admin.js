@@ -17,7 +17,7 @@ const Admin = () => {
 
         const fetchUsers = async () => {
             try {
-                const { data } = await axios.get('http://localhost:5000/api/auth/users', {
+                const { data } = await axios.get('http://localhost:5001/api/auth/users', {
                     withCredentials: true
                 });
                 setUsers(data);
