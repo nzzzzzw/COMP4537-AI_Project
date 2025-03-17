@@ -17,8 +17,8 @@ app.use(cookieParser());
 // Update CORS configuration to accept multiple origins
 const allowedOrigins = [
   'http://localhost:3000',
-  'http://64.23.141.81',
-  process.env.FRONTEND_URL // You could also add this to your .env file
+  'http://localhost:8080',
+  'http://localhost:5001'
 ];
 
 app.use(cors({
