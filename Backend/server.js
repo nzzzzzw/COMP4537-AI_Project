@@ -18,7 +18,9 @@ app.use(cookieParser());
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:8080',
-  'http://localhost:5001'
+  'http://localhost:5001',
+  'https://dolphin-app-q5wzw.ondigitalocean.app',
+  
 ];
 
 app.use(cors({
