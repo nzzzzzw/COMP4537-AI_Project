@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/auth');
 const chatbotRoutes = require('./routes/chatbot');
+const path = require('path'); 
 
 dotenv.config();
 connectDB();
@@ -37,6 +38,12 @@ app.use(cors({
 
 app.use('/api/auth', authRoutes);
 app.use('/api/chatbot', chatbotRoutes);
+
+app.use(express.static(path.join(__dirname, '../Frontend/build')));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../Frontend/build', 'index.html'));
+});
 
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
