@@ -12,8 +12,19 @@ connectDB();
 
 const app = express();
 
+// Add debugging middleware to log all requests
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.originalUrl}`);
+  next();
+});
+
 app.use(express.json());
 app.use(cookieParser());
+
+// Test route to verify API is working
+app.get('/api/test', (req, res) => {
+  res.json({ message: 'API is working correctly' });
+});
 
 // Update CORS configuration to accept multiple origins
 const allowedOrigins = [
@@ -21,7 +32,6 @@ const allowedOrigins = [
   'http://localhost:8080',
   'http://localhost:5001',
   'https://dolphin-app-q5wzw.ondigitalocean.app',
-  
 ];
 
 app.use(cors({
@@ -29,6 +39,7 @@ app.use(cors({
         // Allow requests with no origin (like mobile apps or curl requests)
         if (!origin) return callback(null, true);
         if (allowedOrigins.indexOf(origin) === -1) {
+            console.log('Blocked by CORS:', origin);
             return callback(new Error('CORS policy violation'), false);
         }
         return callback(null, true);
@@ -36,11 +47,14 @@ app.use(cors({
     credentials: true
 }));
 
+// API routes - these MUST come before the static middleware
 app.use('/api/auth', authRoutes);
 app.use('/api/chatbot', chatbotRoutes);
 
+// Static files middleware
 app.use(express.static(path.join(__dirname, '../Frontend/build')));
 
+// Catch-all route - only for GET requests
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../Frontend/build', 'index.html'));
 });
