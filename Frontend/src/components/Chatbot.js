@@ -1,26 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import { Container, Button, Form, Card, ProgressBar, Spinner, Alert } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 
 const Chatbot = () => {
   const [answers, setAnswers] = useState({});
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [response, setResponse] = useState('');
   const [loading, setLoading] = useState(false); 
-  const [error, setError] = useState('');
-  const navigate = useNavigate();
-  const { user } = useAuth();
-  
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token || !user) {
-      console.log('No token or user found, redirecting to login');
-      navigate('/login');
-    }
-  }, [user, navigate]);
+  const [error, setError] = useState(''); 
 
   const questions = [
     {
