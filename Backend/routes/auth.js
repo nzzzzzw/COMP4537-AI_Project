@@ -71,7 +71,7 @@ router.post('/login', async (req, res) => {
 
             res.cookie('jwt', token, {
                 httpOnly: true,
-                secure: process.env.NODE_ENV !== 'development',
+                secure: process.env.NODE_ENV === 'production',
                 sameSite: 'strict',
                 maxAge: 30 * 24 * 60 * 60 * 1000
             });
@@ -80,7 +80,8 @@ router.post('/login', async (req, res) => {
                 _id: user._id,
                 username: user.username,
                 email: user.email,
-                isAdmin: user.isAdmin
+                isAdmin: user.isAdmin,
+                token: token 
             });
         } else {
             res.status(401).json({ message: 'Invalid email or password' });

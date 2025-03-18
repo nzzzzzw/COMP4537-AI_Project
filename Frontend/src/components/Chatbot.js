@@ -104,24 +104,45 @@ const Chatbot = () => {
     try {
       setLoading(true);
       setError('');
-      const token = localStorage.getItem('token'); // Get token from localStorage
+      
+      const token = localStorage.getItem('token');
+      console.log('Token:', token ? token.substring(0, 10) + '...' : 'Not found');
+      console.log('API URL:', process.env.REACT_APP_API_URL);
+      console.log('Answers:', Object.values(answers));
+      
       const { data } = await axios.post(
         `${process.env.REACT_APP_API_URL}/chatbot/generate-response`,
         { answers: Object.values(answers) },
         { 
-          withCredentials: true,
+          // withCredentials: true,
           headers: {
-            'Authorization': `Bearer ${token}` // Add token to headers
+            'Content-Type': 'application/json', 
+            'Authorization': token ? `Bearer ${token}` : '' 
           }
         }
       );
-      setResponse(data.reply);
+      
+      console.log('Response received:', data);
+      
+      if (data.reply) {
+        setResponse(data.reply);
+      } else {
+        console.error('Response missing reply property:', data);
+        setError('Invalid response format from server');
+      }
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error details:', error);
+      console.error('Response data:', error.response?.data);
+      console.error('Response status:', error.response?.status);
+      
       if (error.response?.status === 403) {
         setError('You have exceeded the free API call limit.');
+      } else if (error.response?.status === 401) {
+        setError('Authentication failed. Please try logging in again.');
+      } else if (error.message === 'Network Error') {
+        setError('Network error. Please check your connection or the server might be down.');
       } else {
-        setError('Something went wrong. Please try again.');
+        setError(`Error: ${error.response?.data?.message || error.message || 'Unknown error'}`);
       }
     } finally {
       setLoading(false);
