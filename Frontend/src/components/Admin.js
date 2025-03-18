@@ -17,12 +17,23 @@ const Admin = () => {
 
         const fetchUsers = async () => {
             try {
-                const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/auth/users`, {
-                    withCredentials: true
-                });
+                const token = localStorage.getItem('token');
+                const { data } = await axios.get(
+                    `${process.env.REACT_APP_API_URL}/auth/users`, 
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    }
+                );
                 setUsers(data);
             } catch (error) {
-                console.error('Error fetching users:', error);
+                console.error('Error fetching users:', error.response?.data || error.message);
+                if (error.response?.status === 401) {
+                    // Handle unauthorized error
+                    logout();
+                    navigate('/login');
+                }
             }
         };
 

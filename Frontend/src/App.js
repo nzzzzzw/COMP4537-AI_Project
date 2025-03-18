@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { Container } from 'react-bootstrap';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Login from './components/Login';
@@ -17,9 +17,20 @@ const PrivateRoute = ({ children }) => {
 
 const AdminRoute = ({ children }) => {
     const { user } = useAuth();
-    return user?.isAdmin ? children : <Navigate to="/dashboard" />;
+    const navigate = useNavigate();
+  
+    useEffect(() => {
+        // Check if user exists and is admin
+        if (!user) {
+            navigate('/login');
+        } else if (!user.isAdmin) {
+            navigate('/dashboard');
+        }
+    }, [user, navigate]);
+  
+    // Only render children if user exists and is admin
+    return user && user.isAdmin ? children : null;
 };
-
 
 const App = () => {
     return (

@@ -9,8 +9,15 @@ export const AuthProvider = ({ children }) => {
     });
 
     const login = (userData) => {
+        if (!userData) {
+            console.error('Invalid user data received');
+            return;
+        }
+        
+        console.log('Saving user data:', userData);
         setUser(userData);
         localStorage.setItem('user', JSON.stringify(userData));
+        
         if (userData.token) {
             localStorage.setItem('token', userData.token);
         }
