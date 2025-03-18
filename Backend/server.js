@@ -32,6 +32,7 @@ const allowedOrigins = [
   'http://localhost:8080',
   'http://localhost:5001',
   'https://dolphin-app-q5wzw.ondigitalocean.app',
+  'https://comp-4537-ai-project.vercel.app',
 ];
 
 app.use(cors({
