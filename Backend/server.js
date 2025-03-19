@@ -30,7 +30,7 @@ app.get('/api/test', (req, res) => {
 const allowedOrigins = [
     'http://localhost:3000',
     'http://localhost:8080',
-    'http://localhost:5001',
+    'http://localhost:5002',
     'https://comp-4537-ai-project.vercel.app',
     'https://comp-4537-ai-project-is762rbna-nikos-projects-15b619de.vercel.app',
     'https://dolphin-app-q5wzw.ondigitalocean.app',
@@ -95,7 +95,7 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || 5002;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
