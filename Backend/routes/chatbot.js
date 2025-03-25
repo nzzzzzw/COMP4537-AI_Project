@@ -1,9 +1,38 @@
 const express = require('express');
 const router = express.Router();
 const { protect } = require('../middleware/authMiddleware');
-const axios = require('axios');  // add axios for API calls
+const axios = require('axios');
 
-// Endpoint to generate AI response
+/**
+ * @swagger
+ * /api/chatbot/generate-response:
+ *   post:
+ *     summary: Generate AI response
+ *     description: Submit assessment answers and get personalized mental health advice
+ *     tags: [Chatbot]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - answers
+ *             properties:
+ *               answers:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *     responses:
+ *       200:
+ *         description: AI-generated response
+ *       401:
+ *         description: Not authorized
+ *       403:
+ *         description: Exceeded API call limit
+ */
 router.post('/generate-response', protect, async (req, res) => {
     try {
         const { answers } = req.body;

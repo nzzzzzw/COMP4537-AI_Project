@@ -7,7 +7,21 @@ const crypto = require('crypto');
 const { sendResetPasswordEmail } = require('../utils/emailService');
 const ApiStat = require('../models/ApiStat');
 
-// Get all users (admin only)
+/**
+ * @swagger
+ * /api/auth/users:
+ *   get:
+ *     summary: Get all users
+ *     description: Retrieve a list of all users. Accessible only by admins.
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: A list of users
+ *       401:
+ *         description: Not authorized
+ */
 router.get('/users', protect, admin, async (req, res) => {
     try {
         const users = await User.find({})
@@ -19,7 +33,36 @@ router.get('/users', protect, admin, async (req, res) => {
     }
 });
 
-// Register user
+/**
+ * @swagger
+ * /api/auth/register:
+ *   post:
+ *     summary: Register a new user
+ *     description: Create a new user account
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - username
+ *               - email
+ *               - password
+ *             properties:
+ *               username:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: User registered successfully
+ *       400:
+ *         description: User already exists or validation error
+ */
 router.post('/register', async (req, res) => {
     try {
         const { username, email, password } = req.body;
@@ -59,7 +102,33 @@ router.post('/register', async (req, res) => {
     }
 });
 
-// Login user
+/**
+ * @swagger
+ * /api/auth/login:
+ *   post:
+ *     summary: Login a user
+ *     description: Authenticate a user and return a token
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *       401:
+ *         description: Invalid email or password
+ */
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -93,7 +162,30 @@ router.post('/login', async (req, res) => {
     }
 });
 
-
+/**
+ * @swagger
+ * /api/auth/forgot-password:
+ *   post:
+ *     summary: Request password reset
+ *     description: Send a password reset link to the user's email
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Password reset link sent if account exists
+ *       500:
+ *         description: Server error
+ */
 router.post('/forgot-password', async (req, res) => {
     try {
         const user = await User.findOne({ email: req.body.email });
@@ -132,7 +224,36 @@ router.post('/forgot-password', async (req, res) => {
     }
 });
 
-// Reset password route
+/**
+ * @swagger
+ * /api/auth/reset-password/{token}:
+ *   put:
+ *     summary: Reset password
+ *     description: Reset user password using a valid token
+ *     tags: [Authentication]
+ *     parameters:
+ *       - in: path
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - password
+ *             properties:
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Password updated successfully
+ *       400:
+ *         description: Invalid or expired token
+ */
 router.put('/reset-password/:token', async (req, res) => {
     try {
         // Hash the token from params
@@ -163,7 +284,21 @@ router.put('/reset-password/:token', async (req, res) => {
     }
 });
 
-// Get API stats (admin only)
+/**
+ * @swagger
+ * /api/auth/api-stats:
+ *   get:
+ *     summary: Get API statistics
+ *     description: Retrieve statistics for all API endpoints. Accessible only by admins.
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: API statistics
+ *       401:
+ *         description: Not authorized
+ */
 router.get('/api-stats', protect, admin, async (req, res) => {
     try {
         const stats = await ApiStat.find({})
@@ -174,7 +309,31 @@ router.get('/api-stats', protect, admin, async (req, res) => {
     }
 });
 
-// Delete user (admin only)
+/**
+ * @swagger
+ * /api/auth/users/{id}:
+ *   delete:
+ *     summary: Delete a user
+ *     description: Delete a user by ID. Accessible only by admins.
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: User deleted successfully
+ *       400:
+ *         description: Cannot delete own admin account
+ *       401:
+ *         description: Not authorized
+ *       404:
+ *         description: User not found
+ */
 router.delete('/users/:id', protect, admin, async (req, res) => {
     try {
         const user = await User.findById(req.params.id);

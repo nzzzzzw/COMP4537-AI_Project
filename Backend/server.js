@@ -7,11 +7,51 @@ const authRoutes = require('./routes/auth');
 const chatbotRoutes = require('./routes/chatbot');
 const path = require('path'); 
 const { trackApiRequest } = require('./middleware/apiTrackerMiddleware');
+const swaggerJsDoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
 
 dotenv.config();
 connectDB();
 
 const app = express();
+
+// Swagger configuration
+const swaggerOptions = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Mental Health API',
+      version: '1.0.0',
+      description: 'A REST API for mental health chatbot application',
+      contact: {
+        name: 'API Support',
+        email: 'support@mentalhealth.app'
+      },
+      servers: [
+        {
+          url: process.env.NODE_ENV === 'production' 
+            ? 'https://dolphin-app-q5wzw.ondigitalocean.app'
+            : 'http://localhost:5002'
+        }
+      ]
+    },
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT'
+        }
+      }
+    },
+    security: [{
+      bearerAuth: []
+    }]
+  },
+  apis: ['./routes/*.js'] // Path to the API docs
+};
+
+const swaggerDocs = swaggerJsDoc(swaggerOptions);
 
 // Add debugging middleware to log all requests
 app.use((req, res, next) => {
@@ -68,6 +108,9 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
+// Add Swagger UI route - this MUST come before the API routes
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // API routes - these MUST come before the static middleware
 app.use('/api/auth', authRoutes);
