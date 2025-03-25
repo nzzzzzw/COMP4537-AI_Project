@@ -32,3 +32,11 @@ This project is a mental health assistant web application that provides users wi
 cd Frontend
 npm install
 npm start
+```
+
+### Backend Setup:
+```bash
+cd Backend
+npm install
+node server.js
+```
