@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const { protect, admin } = require('../middleware/authMiddleware');
 const crypto = require('crypto');
 const { sendResetPasswordEmail } = require('../utils/emailService');
+const ApiStat = require('../models/ApiStat');
 
 // Get all users (admin only)
 router.get('/users', protect, admin, async (req, res) => {
@@ -81,6 +82,7 @@ router.post('/login', async (req, res) => {
                 username: user.username,
                 email: user.email,
                 isAdmin: user.isAdmin,
+                apiCalls: user.apiCalls, 
                 token: token 
             });
         } else {
@@ -158,6 +160,39 @@ router.put('/reset-password/:token', async (req, res) => {
         res.json({ message: 'Password updated successfully' });
     } catch (error) {
         res.status(500).json({ message: 'Error resetting password' });
+    }
+});
+
+// Get API stats (admin only)
+router.get('/api-stats', protect, admin, async (req, res) => {
+    try {
+        const stats = await ApiStat.find({})
+            .sort({ requests: -1 });
+        res.json(stats);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Delete user (admin only)
+router.delete('/users/:id', protect, admin, async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        
+        // Prevent admin from deleting themselves
+        if (user._id.toString() === req.user._id.toString()) {
+            return res.status(400).json({ message: 'You cannot delete your own admin account' });
+        }
+        
+        await User.deleteOne({ _id: req.params.id });
+        res.json({ message: 'User deleted successfully' });
+    } catch (error) {
+        console.error('Delete user error:', error);
+        res.status(500).json({ message: 'Error deleting user' });
     }
 });
 

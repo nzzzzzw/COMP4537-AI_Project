@@ -6,6 +6,7 @@ const connectDB = require('./config/db');
 const authRoutes = require('./routes/auth');
 const chatbotRoutes = require('./routes/chatbot');
 const path = require('path'); 
+const { trackApiRequest } = require('./middleware/apiTrackerMiddleware');
 
 dotenv.config();
 connectDB();
@@ -20,6 +21,9 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 app.use(cookieParser());
+
+// Add API tracking middleware
+app.use(trackApiRequest);
 
 // Test route to verify API is working
 app.get('/api/test', (req, res) => {
